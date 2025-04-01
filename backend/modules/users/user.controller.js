@@ -1,26 +1,30 @@
-// we write functions that we want to do
-import User from "./user.model.js"; // database of users
-import bcrypt from "bcrypt"; // to hash the password
+import { sendWelcomeEmail } from "../../config/emailserver.js";
+import User from "./user.model.js";
+import bcrypt from "bcrypt";
 
 export const createUser = async (req, res) => {
   try {
-    const { firstName, lastName, email, password, phoneNumber, role } =
-      req.body;
+    // const firstName = req.body.firstName
+    // const lastName = req.body.lastName
+    // const email = req.body.email
+    // const phoneNumber = req.body.phoneNumber
+    // const role = req.body.role
+    const { firstName, lastName, email, phoneNumber, password } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
-
     const user = new User({
       firstName,
       lastName,
       email,
       password: hashedPassword,
-      phoneNumber,
-      role
+      phoneNumber
+      // role,
     });
     await user.save();
+    sendWelcomeEmail(user.email, user.firstName);
     res.status(201).json(user);
   } catch (error) {
-    console.log(error, "error");
+    console.log(error, "erroridsf");
     res.status(400).json({ message: error });
   }
 };
@@ -40,6 +44,7 @@ export const getUsers = async (req, res) => {
 // Get single user
 export const getUserById = async (req, res) => {
   try {
+    console.log(req.params.id, "req.params.id");
     const userId = req.params.id;
     const user = await User.findById(userId);
     if (!user) {
@@ -54,15 +59,25 @@ export const getUserById = async (req, res) => {
 // Update User
 export const updateUser = async (req, res) => {
   try {
-    const userId = req.params.id;
-    const { firstName, lastName, email, password, phoneNumber, role } =
-      req.body;
+    const userId = req.params.userId;
+
+    const { firstName, lastName, email, phoneNumber, password } = req.body;
+    let role = req.body.role;
+    const userRole = req.user.role;
+    if (userRole === "user") {
+      role = "user";
+    } else if (userRole === "moderator") {
+      if (req.body.role === "admin") {
+        return res
+          .status(400)
+          .json({ message: "Cannot create this user level" });
+      }
+    }
 
     const user = await User.findById(userId);
     if (!user) {
-      return req.status(404).json({ message: "User not found" });
+      return res.status(404).json({ message: "User not found" });
     }
-
     if (firstName) {
       user.firstName = firstName;
     }
@@ -72,30 +87,41 @@ export const updateUser = async (req, res) => {
     if (email) {
       user.email = email;
     }
+
     if (phoneNumber) {
       user.phoneNumber = phoneNumber;
     }
+
     if (role) {
       user.role = role;
     }
+
     if (password) {
       const hashedPassword = await bcrypt.hash(password, 10);
       user.password = hashedPassword;
     }
-
     await user.save();
-    res.status(202).json({ message: "User updated successfully" });
+    res.status(200).json({ message: "User updated successfully", user });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error });
   }
 };
-
 // Delete User
 export const deleteUser = async (req, res) => {
   try {
     const userId = req.params.id;
     await User.findByIdAndDelete(userId);
-    res.status(200).json({ message: "User deleted successfully" });
+    res.status(200).json({ message: "User delted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error: error });
+  }
+};
+// Delete me
+export const deleteMe = async (req, res) => {
+  try {
+    const userId = req.user.id;
+    await User.findByIdAndDelete(userId);
+    res.status(200).json({ message: "User delted successfully" });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error });
   }

@@ -2,13 +2,13 @@ import express from "express";
 import {
   createBooking,
   getMyBooking,
-  cancelBooking
-} from "./booking.controller.js";
-
+  cancelBooking,
+} from "./booking.constroller.js";
+import { isAuthenticated } from "../../middleware/auth.middleware.js";
 const router = express.Router();
 
-router.post("/:id/booking", createBooking);
-router.get("/myBookings/:id", getMyBooking);
-router.delete("/:id/cancel", cancelBooking);
+router.post("/:tourId/book", isAuthenticated, createBooking);
+router.get("/myBookings", isAuthenticated, getMyBooking);
+router.delete("/:bookingId/cancel", isAuthenticated, cancelBooking);
 
 export default router;

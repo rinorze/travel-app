@@ -9,28 +9,35 @@ export const createTour = async (req, res) => {
       country,
       city,
       price,
-      averageRating,
-      createdBy
+      averageReating,
+      createdBy,
     } = req.body;
 
     const image = req.file ? req.file.path : null;
+    console.log(image, "image controller");
+
+    // let image
+    // if(req.file) {
+    //   image = req.file.path
+    // } else {
+    //   image = null
+    // }
 
     const tour = new Tour({
-      title,
+      title: title,
       description,
       location,
       country,
       city,
       price,
-      averageRating,
+      averageReating,
       image,
-      createdBy
+      createdBy,
     });
-
     await tour.save();
-    res.status(201).json({ message: "Tour created successfully", tour });
+    res.status(201).json({ message: "Trou created", tour });
   } catch (error) {
-    res.status(400).json({ message: "Error creating in Tour", error: error });
+    res.status(400).json({ message: "Error creating Tour", error: error });
   }
 };
 
@@ -41,124 +48,93 @@ export const getTours = async (req, res) => {
       .populate("reviews.user", "firstName lastName");
     res.status(200).json(tours);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error });
+    console.log(error, "errorrr");
+    res.status(500).json({ message: "Server Error", error: error });
   }
 };
 
 export const getTourById = async (req, res) => {
   try {
-    const tourId = req.params.id;
+    const tourId = req.params.tourId;
     const tour = await Tour.findById(tourId)
       .populate("createdBy", "firstName lastName")
       .populate("reviews.user", "firstName lastName");
-
-    if (!tour) {
-      return res.status(404).json({ message: "tour not found" });
-    }
     res.status(200).json(tour);
   } catch (error) {
-    res.status(500).json({ message: "Server error", error: error });
+    res.status(500).json({ message: "Server Error", error });
   }
 };
-
 export const updateTour = async (req, res) => {
   try {
-    const tourId = req.params.id;
-    const {
-      title,
-      description,
-      location,
-      country,
-      city,
-      price,
-      averageRating,
-      image
-    } = req.body;
+    const { tourId } = req.params;
+    const { title, description, location, country, city, price } = req.body;
 
     const tour = await Tour.findById(tourId);
     if (!tour) {
-      res.status(404).json({ message: "Tour not found" });
+      return res.status(404).json({ message: "Tour not found" });
     }
 
-    if (title) {
-      tour.title = title;
-    }
-
-    if (description) {
-      tour.description = description;
-    }
-
-    if (location) {
-      tour.location = location;
-    }
-
-    if (country) {
-      tour.country = country;
-    }
-
-    if (city) {
-      tour.city = city;
-    }
-
-    if (price) {
-      tour.price = price;
-    }
-
-    if (averageRating) {
-      tour.averageRating = averageRating;
-    }
-
-    if (image) {
-      tour.image = image;
-    }
+    // Update only provided fields
+    if (title) tour.title = title;
+    if (description) tour.description = description;
+    if (location) tour.location = location;
+    if (country) tour.country = country;
+    if (city) tour.city = city;
+    if (price) tour.price = price;
+    const image = req.file ? req.file.path : null;
+    tour.image = image;
 
     await tour.save();
-    res.status(202).json({ message: "Tour updated successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error });
-  }
-};
 
-export const deleteTour = async (req, res) => {
-  try {
-    const tourId = req.params.id;
-    await Tour.findByIdAndDelete(tourId);
-    res.status(200).json({ message: "Tour Deleted successfully" });
+    res.status(200).json({ message: "Tour updated successfully", tour });
   } catch (error) {
     res.status(500).json({ message: "Server Error", error: error });
   }
 };
 
+export const deleteTour = async (req, res) => {
+  try {
+    const tourId = req.params.tourId;
+    const tour = await Tour.findByIdAndDelete(tourId);
+    if (!tour) {
+      return res.status(404).json({ message: "Tour nof found" });
+    }
+    res.status(200).json({ message: "Tour Deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Server Error", error });
+  }
+};
+
 export const addReview = async (req, res) => {
   try {
-    const tourId = req.params.id;
-    const tour = await Tour.findById(tourId);
+    const tourId = req.params.tourId;
+    const user = req.user.id;
 
+    const tour = await Tour.findById(tourId);
     if (!tour) {
       return res.status(404).json({ message: "Tour not found" });
     }
 
-    const { rating, comment, user } = req.body;
+    const { rating, comment } = req.body;
 
     const existingReview = tour.reviews.find(
-      (rev) => rev.user.toString() === user.toString()
+      (rev) => rev.user.toString() === user
     );
 
     if (existingReview) {
       return res
         .status(400)
-        .json({ message: "You have already reviewed this tour" });
+        .json({ message: "You have already revied this tour" });
     }
-
     const newReview = { user, rating, comment };
     tour.reviews.push(newReview);
 
     const totalRating = tour.reviews.reduce((acc, rev) => acc + rev.rating, 0);
-    tour.averageRating = totalRating / tour.reviews.length;
+    tour.averageReating = totalRating / tour.reviews.length;
 
-    await tour.save();
-    res.status(201).json({ message: "Review added successfully" });
+    tour.save();
+    res.status(201).json({ message: "Review Added successfully", tour });
   } catch (error) {
-    res.status(500).json({ message: "Server Error", error: error.message });
+    res.status(500).json({ message: "Server Error", error });
   }
 };

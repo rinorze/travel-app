@@ -3,9 +3,8 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const secretKey = process.env.SECRET_KEY;
+const sercertKey = process.env.SECRET_KEY;
 
-// next - is go to the next step
 export const isAuthenticated = (req, res, next) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) {
@@ -13,26 +12,25 @@ export const isAuthenticated = (req, res, next) => {
       .status(401)
       .json({ message: "Access denied, no token provided" });
   }
-
+  console.log(authHeader, "authHeader");
   const token = authHeader.split(" ")[1];
 
   try {
-    const decode = jwt.verify(token, secretKey);
-    req.user = decode; // here is the id and role
+    const decode = jwt.verify(token, sercertKey);
+    req.user = decode;
     next();
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    res.status(401).json({ message: "invalid token" });
   }
 };
-
-export const authorized = (roles = []) => {
+export const authorize = (roles = []) => {
   if (typeof roles === "string") {
     roles = [roles];
   }
 
   return (req, res, next) => {
     if (!req.user) {
-      res
+      return res
         .status(401)
         .json({ message: "Access denied, insufficient permissions" });
     }

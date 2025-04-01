@@ -4,26 +4,34 @@ import {
   getUsers,
   getUserById,
   updateUser,
-  deleteUser
+  deleteUser,
+  deleteMe,
 } from "./user.controller.js";
 import {
-  authorized,
-  isAuthenticated
+  authorize,
+  isAuthenticated,
 } from "../../middleware/auth.middleware.js";
-// Links - user.routes.js
-
 const router = express.Router();
-
+// router.use(isAuthenticated);
 router.get(
   "/getAllUsers",
   isAuthenticated,
-  authorized("admin", "moderator"),
+  authorize("admin", "moderator"),
   getUsers
 );
-
 router.post("/createUsers", createUser);
+
 router.get("/getOneUser/:id", isAuthenticated, getUserById);
-router.put("/updateUser/:id", isAuthenticated, updateUser); // to update something we need to use put
-router.delete("/deleteUser/:id", isAuthenticated, deleteUser);
+
+router.put("/updateUser/:userId", isAuthenticated, updateUser);
+
+router.delete(
+  "/deleteUser/:id",
+  isAuthenticated,
+  authorize("admin", "moderator"),
+  deleteUser
+);
+
+router.delete("/deleteMe", isAuthenticated, deleteMe);
 
 export default router;

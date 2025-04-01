@@ -1,43 +1,54 @@
+// title
+// decsripton
+// location
+// country
+// city
+// price
+// averageReating
+// image
+// updatedAt
+// createdAt
 import mongoose from "mongoose";
 
-const reviewSchema = new mongoose.Schema({
+const revieSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "User",
-    required: true
+    required: true,
   },
   comment: {
-    type: String
+    type: String,
   },
   rating: {
     type: Number,
     min: 1,
     max: 5,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const tourSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
     description: { type: String },
-    location: { type: String, required: true },
+    location: { type: String },
     country: { type: String, required: true },
     city: { type: String, required: true },
-    price: { type: Number, required: true },
-    averageRating: { type: Number, default: 0 },
+    price: { type: Number, reuired: true },
+    averageReating: { type: Number, default: 0 },
     image: { type: String },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      reuired: true,
     },
-    reviews: [reviewSchema]
+    reviews: [revieSchema],
   },
   {
-    timestamps: true
+    timestamps: true,
   }
 );
 
 const Tour = mongoose.model("Tour", tourSchema);
+
 export default Tour;

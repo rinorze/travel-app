@@ -13,11 +13,10 @@ A dynamic travel application built with **React (Frontend)** + **Node.js, Expres
 - 🔐 JWT authentication (Login/Signup).
 
 ### **Backend (Node.js + Express)**
-
-- 🚀 RESTful API for destinations, users, and bookings.
-- 🔒 Secure JWT authentication.
-- 🗄️ MongoDB database (hosted on Atlas).
-- 📸 Cloudinary image upload for travel photos.
+- 🚀 RESTful API for destinations, users, and bookings  
+- 🔒 Secure JWT authentication with Bcrypt password hashing  
+- 🗄️ MongoDB database (hosted on Atlas) with Mongoose ODM  
+- ✉️ Nodemailer integration for booking confirmations 
 
 ---
 

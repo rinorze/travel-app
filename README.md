@@ -7,7 +7,6 @@ A dynamic travel application built with **React (Frontend)** + **Node.js, Expres
 ### **Frontend (React)**
 
 - 🔍 Search/filter destinations by country, price, or rating.
-- 📍 Interactive maps (Google Maps API).
 - ⭐ Review system with ratings.
 - ❤️ Save favorites & manage bookings.
 - 🔐 JWT authentication (Login/Signup).
@@ -25,6 +24,6 @@ A dynamic travel application built with **React (Frontend)** + **Node.js, Expres
 | Frontend      | Backend        | APIs & Tools                |
 | ------------- | -------------- | ----------------------------|
 | React.js      | Node.js        | Nodemailer (Sending Emails) |
-| Redux (State) | Express.js     | Bcrypt (Password Hashing)   |
+| React Router  | Express.js     | Bcrypt (Password Hashing)   |
 | Axios (HTTP)  | MongoDB        | JWT (Auth)                  |
 | CSS/SCSS      | Mongoose (ODM) | Postman (Testing)           |

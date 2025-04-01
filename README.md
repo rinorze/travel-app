@@ -23,9 +23,9 @@ A dynamic travel application built with **React (Frontend)** + **Node.js, Expres
 
 ## 🛠️ Tech Stack
 
-| Frontend      | Backend        | APIs & Tools      |
-| ------------- | -------------- | ----------------- |
-| React.js      | Node.js        | Nodemailer        |
-| Redux (State) | Express.js     | Bcrypt            |
-| Axios (HTTP)  | MongoDB        | JWT (Auth)        |
-| CSS/SCSS      | Mongoose (ODM) | Postman (Testing) |
+| Frontend      | Backend        | APIs & Tools                |
+| ------------- | -------------- | ----------------------------|
+| React.js      | Node.js        | Nodemailer (Sending Emails) |
+| Redux (State) | Express.js     | Bcrypt (Password Hashing)   |
+| Axios (HTTP)  | MongoDB        | JWT (Auth)                  |
+| CSS/SCSS      | Mongoose (ODM) | Postman (Testing)           |
